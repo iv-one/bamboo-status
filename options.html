@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="application" ng-csp>
+<head>
+    <meta charset="utf-8">
+    <title>Bamboo status settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="assets/vendors/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/vendors/bootstrap/css/docs.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .valid-false {
+            display: none;
+        }
+
+        .loading {
+            padding-top: 9px;
+        }
+    </style>
+    <link href="assets/vendors/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="assets/vendors/bootstrap/ico/favicon.ico">
+
+    <script src="assets/vendors/bootstrap/js/jquery.js"></script>
+    <script src="assets/vendors/bootstrap/js/bootstrap.js"></script>
+    <script src="assets/vendors/angular/angular-1.0.1.js"></script>
+    <script src="js/date.format.js"></script>
+    <script src="js/bamboo-status.js"></script>
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="#">Bamboo Status <i class="icon-star icon-white"></i></a>
+            <a class="pull-right loading hide" href="#"><img src="assets/images/loading.gif" width="22px" height="22px"/></a>
+        </div>
+    </div>
+</div>
+
+<div class="container" ng-controller="SettingsController">
+
+    <div class="row">
+        <div class="span12">
+           <div class="alert alert-error fade in hide">
+               <button class="close" data-dismiss="alert">×</button>
+               <strong>Error!</strong> {{error}}.
+           </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <form class="well form-search">
+                <label class="control-label" for="apiUrl">Bamboo API: </label>
+                <input ng-model="url" type="text" class="input-big search-query" id="apiUrl" style="width:350px" placeholder="http://localhost.com:8085/bamboo/rest/api/…">
+                <button ng-click="update()" type="submit" class="btn">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row valid-{{valid}}">
+        <div class="span6">
+            <form class="well form-inline">
+                <label class="control-label">Current Build</label>
+                <select ng-model="currentPlan" ng-options="plan.shortName group by plan.projectName for plan in plans">
+                </select>
+            </form>
+        </div>
+        <div class="span6">
+            <form class="well form-inline">
+                <label class="control-label">Test Build</label>
+                <select ng-model="testPlan" ng-options="plan.shortName group by plan.projectName for plan in plans">
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="row valid-{{valid}}">
+        <div class="span12">
+            <div class="form-actions">
+                <button ng-click="save()" class="btn btn{{button}}">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
