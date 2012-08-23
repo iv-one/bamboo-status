@@ -6,9 +6,11 @@ class BadgeController
 
     run: () ->
         self = @
+        fail = (error) -> self.fail(error)
+
         @bambooService.getAllPlans (plans) ->
             self.loadPlans(plans)
-        , @fail
+        , fail
 
     findPlan: (plans, key) ->
         found = null
@@ -23,23 +25,32 @@ class BadgeController
 
     loadPlansStatus: () ->
         self = @
-        fail = @fail
+        fail = (error) -> self.fail(error)
+
         bambooService = @bambooService
         bambooService.getPlanResult self.currentPlan, (currentResult) ->
             bambooService.getPlanResult self.testPlan, (testResult) ->
                 success = currentResult.isSuccessful() && testResult.isSuccessful();
                 self.updateBrowserAction success, currentResult, testResult
                 setTimeout(() ->
-                           self.run()
+                    self.run()
                 , 10000)
             , fail
         , fail
 
     updateBrowserAction: (success, currentResult, testResult) ->
-        color = if success then [0, 200, 0, 200] else [200, 0, 0, 200]
-        chrome.browserAction.setBadgeBackgroundColor color:color
-        chrome.browserAction.setBadgeText text:currentResult.nextNumber()
+        @updateBrowserActionInfo success, currentResult.nextNumber()
         chrome.browserAction.setTitle title:'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase()
 
+    updateBrowserActionInfo: (success, text, info) ->
+        color = if success then [0, 200, 0, 200] else [200, 0, 0, 200]
+        chrome.browserAction.setBadgeBackgroundColor color:color
+        chrome.browserAction.setBadgeText text: text
+        chrome.browserAction.setTitle title: info
+
     fail: (error) ->
-        console.log error
+        self = @
+        @updateBrowserActionInfo false, '!', 'Can\'t connect to Bamboo'
+        setTimeout(() ->
+            self.run()
+        , 2000)

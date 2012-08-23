@@ -1,4 +1,4 @@
-SettingsController = ($scope, store, bambooService) ->
+SettingsController = ($scope, store, bambooService, alert) ->
     reloadApi = () ->
         bambooService.getAllPlans loadPlans, fail if (store.getUrl() != '')
 
@@ -9,14 +9,14 @@ SettingsController = ($scope, store, bambooService) ->
         found
 
     loadPlans = (plans) ->
+        alert.success "All plans was loaded"
         $scope.plans = plans
         $scope.currentPlan = findPlan(plans, store.getCurrentPlan())
         $scope.testPlan = findPlan(plans, store.getTestPlan())
         $scope.$digest()
 
     fail = (error) ->
-        $scope.error = "Url '#{$scope.url}' is not correct Bamboo API url"
-        $scope.$digest()
+        alert.error "Url '#{$scope.url}' is not correct Bamboo url"
 
     $scope.valid = false
     $scope.button = ' disabled'
@@ -33,4 +33,4 @@ SettingsController = ($scope, store, bambooService) ->
     if (store.getUrl() != null)
         reloadApi()
 
-SettingsController.$inject = ['$scope', 'store', 'bambooService']
+SettingsController.$inject = ['$scope', 'store', 'bambooService', 'alert']

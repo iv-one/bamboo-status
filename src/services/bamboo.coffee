@@ -9,7 +9,7 @@ class BambooService
                 $('.loading').hide()
                 func?(data)
 
-        url = @store.getUrl() + 'latest/' + task
+        url = @store.getUrl() + '/rest/api/latest/' + task
         $.ajax(
             url     : url
             success : decorate(callback)
@@ -47,5 +47,3 @@ class BambooService
 angular.module('BambooService', ['Store']).factory('bambooService', (store) ->
     new BambooService(store)
 )
-
-#http://longmsappu1.uk.db.com:8085/rest/api/latest/result/RC22-UT?expand=results.result.result

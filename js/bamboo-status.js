@@ -1,6 +1,6 @@
-var BadgeController, BambooService, Plan, Project, Result, SettingsController, Store, dependencies;
+var Alert, BadgeController, BambooService, Plan, Project, Result, SettingsController, Store, dependencies;
 
-dependencies = ['Store', 'BambooService'];
+dependencies = ['Alert', 'Store', 'BambooService'];
 
 angular.module('application', dependencies).config(function() {
   return true;
@@ -9,8 +9,6 @@ angular.module('application', dependencies).config(function() {
 dependencies = ['Store', 'BambooService'];
 
 angular.module('badge', dependencies).run(function(store, bambooService) {
-  console.log(store);
-  console.log(bambooService);
   window.badge = new BadgeController(store, bambooService);
   return window.badge.run();
 });
@@ -27,11 +25,14 @@ BadgeController = (function() {
   }
 
   BadgeController.prototype.run = function() {
-    var self;
+    var fail, self;
     self = this;
+    fail = function(error) {
+      return self.fail(error);
+    };
     return this.bambooService.getAllPlans(function(plans) {
       return self.loadPlans(plans);
-    }, this.fail);
+    }, fail);
   };
 
   BadgeController.prototype.findPlan = function(plans, key) {
@@ -52,7 +53,9 @@ BadgeController = (function() {
   BadgeController.prototype.loadPlansStatus = function() {
     var bambooService, fail, self;
     self = this;
-    fail = this.fail;
+    fail = function(error) {
+      return self.fail(error);
+    };
     bambooService = this.bambooService;
     return bambooService.getPlanResult(self.currentPlan, function(currentResult) {
       return bambooService.getPlanResult(self.testPlan, function(testResult) {
@@ -67,28 +70,40 @@ BadgeController = (function() {
   };
 
   BadgeController.prototype.updateBrowserAction = function(success, currentResult, testResult) {
+    this.updateBrowserActionInfo(success, currentResult.nextNumber());
+    return chrome.browserAction.setTitle({
+      title: 'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase()
+    });
+  };
+
+  BadgeController.prototype.updateBrowserActionInfo = function(success, text, info) {
     var color;
     color = success ? [0, 200, 0, 200] : [200, 0, 0, 200];
     chrome.browserAction.setBadgeBackgroundColor({
       color: color
     });
     chrome.browserAction.setBadgeText({
-      text: currentResult.nextNumber()
+      text: text
     });
     return chrome.browserAction.setTitle({
-      title: 'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase()
+      title: info
     });
   };
 
   BadgeController.prototype.fail = function(error) {
-    return console.log(error);
+    var self;
+    self = this;
+    this.updateBrowserActionInfo(false, '!', 'Can\'t connect to Bamboo');
+    return setTimeout(function() {
+      return self.run();
+    }, 2000);
   };
 
   return BadgeController;
 
 })();
 
-SettingsController = function($scope, store, bambooService) {
+SettingsController = function($scope, store, bambooService, alert) {
   var fail, findPlan, loadPlans, reloadApi;
   reloadApi = function() {
     if (store.getUrl() !== '') return bambooService.getAllPlans(loadPlans, fail);
@@ -102,14 +117,14 @@ SettingsController = function($scope, store, bambooService) {
     return found;
   };
   loadPlans = function(plans) {
+    alert.success("All plans was loaded");
     $scope.plans = plans;
     $scope.currentPlan = findPlan(plans, store.getCurrentPlan());
     $scope.testPlan = findPlan(plans, store.getTestPlan());
     return $scope.$digest();
   };
   fail = function(error) {
-    $scope.error = "Url '" + $scope.url + "' is not correct Bamboo API url";
-    return $scope.$digest();
+    return alert.error("Url '" + $scope.url + "' is not correct Bamboo url");
   };
   $scope.valid = false;
   $scope.button = ' disabled';
@@ -125,7 +140,7 @@ SettingsController = function($scope, store, bambooService) {
   if (store.getUrl() !== null) return reloadApi();
 };
 
-SettingsController.$inject = ['$scope', 'store', 'bambooService'];
+SettingsController.$inject = ['$scope', 'store', 'bambooService', 'alert'];
 
 Plan = (function() {
 
@@ -198,7 +213,7 @@ BambooService = (function() {
         return typeof func === "function" ? func(data) : void 0;
       };
     };
-    url = this.store.getUrl() + 'latest/' + task;
+    url = this.store.getUrl() + '/rest/api/latest/' + task;
     return $.ajax({
       url: url,
       success: decorate(callback),
@@ -280,4 +295,44 @@ Store = (function() {
 
 angular.module('Store', []).factory('store', function($window) {
   return new Store;
+});
+
+Alert = (function() {
+
+  function Alert() {
+    this.name = '.alerts';
+    this.index = 0;
+  }
+
+  Alert.prototype.error = function(message) {
+    return this.show('Error!', message, 'error');
+  };
+
+  Alert.prototype.success = function(message) {
+    return this.show('Success!', message, 'success');
+  };
+
+  Alert.prototype.show = function(title, message, type) {
+    var alert, close, template;
+    this.index++;
+    template = this.getTemplate(title, message, type, this.index);
+    $(this.name).append(template);
+    alert = ".alert-" + this.index;
+    close = ".close-" + this.index;
+    $(alert).fadeIn();
+    return $(close).click(function() {
+      return $(alert).fadeOut();
+    });
+  };
+
+  Alert.prototype.getTemplate = function(title, message, type, index) {
+    return "<div class='alert alert-" + index + " alert-" + type + " fade in hide'><button class='close close-" + index + "'>×</button><strong>" + title + "</strong> " + message + "</div>";
+  };
+
+  return Alert;
+
+})();
+
+angular.module('Alert', []).factory('alert', function($window) {
+  return new Alert;
 });
