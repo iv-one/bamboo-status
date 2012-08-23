@@ -70,10 +70,7 @@ BadgeController = (function() {
   };
 
   BadgeController.prototype.updateBrowserAction = function(success, currentResult, testResult) {
-    this.updateBrowserActionInfo(success, currentResult.nextNumber());
-    return chrome.browserAction.setTitle({
-      title: 'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase()
-    });
+    return this.updateBrowserActionInfo(success, currentResult.nextNumber(), 'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase());
   };
 
   BadgeController.prototype.updateBrowserActionInfo = function(success, text, info) {

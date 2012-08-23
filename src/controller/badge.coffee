@@ -39,8 +39,9 @@ class BadgeController
         , fail
 
     updateBrowserAction: (success, currentResult, testResult) ->
-        @updateBrowserActionInfo success, currentResult.nextNumber()
-        chrome.browserAction.setTitle title:'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase()
+        @updateBrowserActionInfo success,
+                                 currentResult.nextNumber(),
+                                 'Current build 2.6.' + currentResult.nextNumber() + " / " + testResult.tests + " tests " + testResult.state.toLowerCase()
 
     updateBrowserActionInfo: (success, text, info) ->
         color = if success then [0, 200, 0, 200] else [200, 0, 0, 200]
