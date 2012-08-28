@@ -62,7 +62,7 @@
         <div class="span12">
             <form class="well form-search">
                 <label class="control-label" for="apiUrl">Bamboo API: </label>
-                <input ng-model="url" type="text" class="input-big search-query" id="apiUrl" style="width:350px" placeholder="http://localhost.com:8085/bamboo/rest/api/…">
+                <input ng-model="url" type="text" class="input-big search-query" id="apiUrl" style="width:350px" placeholder="http://localhost.com:8085/bamboo…">
                 <button ng-click="update()" type="submit" class="btn">Update</button>
             </form>
         </div>
@@ -72,7 +72,9 @@
         <div class="span6">
             <form class="well form-inline">
                 <label class="control-label">Current Build</label>
-                <select ng-model="currentPlan" ng-options="plan.shortName group by plan.projectName for plan in plans">
+                <select ng-model="currentPlan"
+                        ng-options="plan.shortName group by plan.projectName for plan in plans"
+                        ng-change="change()">
                 </select>
             </form>
         </div>

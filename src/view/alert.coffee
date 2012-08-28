@@ -9,6 +9,9 @@ class Alert
     success: (message) ->
         @show 'Success!', message, 'success'
 
+    info: (message) ->
+        @show 'Info!', message, 'info'
+
     show: (title, message, type) ->
         @index++
 

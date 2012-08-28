@@ -2,7 +2,10 @@ class BadgeController
     constructor: (@store, @bambooService) ->
         store = @store
         chrome.browserAction.onClicked.addListener (tab) ->
-            window.open(store.getUrl() + 'allPlans.action', '_newtab')
+            if (store.isCorrectUrl())
+                window.open(store.getUrl() + '/allPlans.action', '_newtab')
+            else
+                chrome.tabs.create({url: "options.html"});
 
     run: () ->
         self = @

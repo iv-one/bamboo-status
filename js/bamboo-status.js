@@ -20,7 +20,13 @@ BadgeController = (function() {
     this.bambooService = bambooService;
     store = this.store;
     chrome.browserAction.onClicked.addListener(function(tab) {
-      return window.open(store.getUrl() + 'allPlans.action', '_newtab');
+      if (store.isCorrectUrl()) {
+        return window.open(store.getUrl() + '/allPlans.action', '_newtab');
+      } else {
+        return chrome.tabs.create({
+          url: "options.html"
+        });
+      }
     });
   }
 
@@ -114,14 +120,19 @@ SettingsController = function($scope, store, bambooService, alert) {
     return found;
   };
   loadPlans = function(plans) {
+    store.setUrlCorrectness(true);
     alert.success("All plans was loaded");
+    $scope.valid = true;
     $scope.plans = plans;
     $scope.currentPlan = findPlan(plans, store.getCurrentPlan());
     $scope.testPlan = findPlan(plans, store.getTestPlan());
     return $scope.$digest();
   };
   fail = function(error) {
-    return alert.error("Url '" + $scope.url + "' is not correct Bamboo url");
+    store.setUrlCorrectness(false);
+    alert.error("Url '" + $scope.url + "' is not correct Bamboo url");
+    $scope.valid = false;
+    return $scope.$digest();
   };
   $scope.valid = false;
   $scope.button = ' disabled';
@@ -131,10 +142,19 @@ SettingsController = function($scope, store, bambooService, alert) {
     return reloadApi();
   };
   $scope.save = function() {
+    $scope.button = ' disabled';
     store.saveCurrentPlan($scope.currentPlan);
-    return store.saveTestPlan($scope.testPlan);
+    store.saveTestPlan($scope.testPlan);
+    return alert.success("Plans successfully saved");
   };
-  if (store.getUrl() !== null) return reloadApi();
+  $scope.change = function() {
+    return $scope.button = '-primary';
+  };
+  if (store.getUrl() !== null && store.getUrl() !== '') {
+    return reloadApi();
+  } else {
+    return alert.info("Please input your Bamboo URL");
+  }
 };
 
 SettingsController.$inject = ['$scope', 'store', 'bambooService', 'alert'];
@@ -270,6 +290,14 @@ Store = (function() {
     return window.localStorage.url = value;
   };
 
+  Store.prototype.setUrlCorrectness = function(value) {
+    return window.localStorage.correctUrl = value;
+  };
+
+  Store.prototype.getUrlCorrectness = function() {
+    return window.localStorage.correctUrl;
+  };
+
   Store.prototype.getCurrentPlan = function() {
     return window.localStorage.currentPlan;
   };
@@ -284,6 +312,12 @@ Store = (function() {
 
   Store.prototype.saveTestPlan = function(plan) {
     return window.localStorage.testPlan = plan.key;
+  };
+
+  Store.prototype.isCorrectUrl = function() {
+    var url;
+    url = window.localStorage.url;
+    return url !== null && url !== '' && window.localStorage.correctUrl;
   };
 
   return Store;
@@ -307,6 +341,10 @@ Alert = (function() {
 
   Alert.prototype.success = function(message) {
     return this.show('Success!', message, 'success');
+  };
+
+  Alert.prototype.info = function(message) {
+    return this.show('Info!', message, 'info');
   };
 
   Alert.prototype.show = function(title, message, type) {

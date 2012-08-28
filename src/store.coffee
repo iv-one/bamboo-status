@@ -6,6 +6,12 @@ class Store
     setUrl: (value) ->
         window.localStorage.url = value
 
+    setUrlCorrectness: (value) ->
+        window.localStorage.correctUrl = value
+
+    getUrlCorrectness: () ->
+        window.localStorage.correctUrl
+
     getCurrentPlan: () ->
         window.localStorage.currentPlan
 
@@ -17,6 +23,10 @@ class Store
 
     saveTestPlan: (plan) ->
         window.localStorage.testPlan = plan.key
+
+    isCorrectUrl: () ->
+        url = window.localStorage.url
+        url != null && url != '' && window.localStorage.correctUrl
 
 angular.module('Store', []).factory('store', ($window) ->
     new Store
