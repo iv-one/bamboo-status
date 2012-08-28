@@ -2,6 +2,7 @@ class Alert
     constructor: () ->
         @name = '.alerts'
         @index = 0
+        @visible = 0
 
     error: (message) ->
         @show 'Error!', message, 'error'
@@ -14,6 +15,10 @@ class Alert
 
     show: (title, message, type) ->
         @index++
+        @visible++
+        @resize()
+
+        self = @
 
         template = @getTemplate title, message, type, @index
         $(@name).append(template)
@@ -24,7 +29,20 @@ class Alert
         $(alert).fadeIn()
         $(close).click(() ->
             $(alert).fadeOut()
+            self.hide()
         )
+
+        setTimeout(() ->
+            $(alert).fadeOut()
+            self.hide()
+        , 3000)
+
+    hide: () ->
+        @visible--;
+        @resize()
+
+    resize: () ->
+        $(@name).animate({ height : 52 * @visible });
 
     getTemplate: (title, message, type, index) ->
         "<div class='alert alert-#{index} alert-#{type} fade in hide'><button class='close close-#{index}'>×</button><strong>#{title}</strong> #{message}</div>"

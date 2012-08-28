@@ -22,6 +22,11 @@
         .loading {
             padding-top: 9px;
         }
+
+        .alerts {
+            overflow: hidden;
+            height: 1px;
+        }
     </style>
     <link href="assets/vendors/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -81,7 +86,9 @@
         <div class="span6">
             <form class="well form-inline">
                 <label class="control-label">Test Build</label>
-                <select ng-model="testPlan" ng-options="plan.shortName group by plan.projectName for plan in plans">
+                <select ng-model="testPlan"
+                        ng-options="plan.shortName group by plan.projectName for plan in plans"
+                        ng-change="change()">
                 </select>
             </form>
         </div>

@@ -333,6 +333,7 @@ Alert = (function() {
   function Alert() {
     this.name = '.alerts';
     this.index = 0;
+    this.visible = 0;
   }
 
   Alert.prototype.error = function(message) {
@@ -348,15 +349,34 @@ Alert = (function() {
   };
 
   Alert.prototype.show = function(title, message, type) {
-    var alert, close, template;
+    var alert, close, self, template;
     this.index++;
+    this.visible++;
+    this.resize();
+    self = this;
     template = this.getTemplate(title, message, type, this.index);
     $(this.name).append(template);
     alert = ".alert-" + this.index;
     close = ".close-" + this.index;
     $(alert).fadeIn();
-    return $(close).click(function() {
-      return $(alert).fadeOut();
+    $(close).click(function() {
+      $(alert).fadeOut();
+      return self.hide();
+    });
+    return setTimeout(function() {
+      $(alert).fadeOut();
+      return self.hide();
+    }, 3000);
+  };
+
+  Alert.prototype.hide = function() {
+    this.visible--;
+    return this.resize();
+  };
+
+  Alert.prototype.resize = function() {
+    return $(this.name).animate({
+      height: 52 * this.visible
     });
   };
 
