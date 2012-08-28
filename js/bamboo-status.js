@@ -19,6 +19,11 @@ BadgeController = (function() {
     this.store = store;
     this.bambooService = bambooService;
     store = this.store;
+    if (store.isFirstRunning()) {
+      chrome.tabs.create({
+        url: "options.html"
+      });
+    }
     chrome.browserAction.onClicked.addListener(function(tab) {
       if (store.isCorrectUrl()) {
         return window.open(store.getUrl() + '/allPlans.action', '_newtab');
@@ -318,6 +323,13 @@ Store = (function() {
     var url;
     url = window.localStorage.url;
     return url !== null && url !== '' && window.localStorage.correctUrl;
+  };
+
+  Store.prototype.isFirstRunning = function() {
+    var ok;
+    ok = !window.localStorage.installed;
+    window.localStorage.installed = true;
+    return ok;
   };
 
   return Store;

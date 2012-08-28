@@ -35,7 +35,7 @@ class Alert
         setTimeout(() ->
             $(alert).fadeOut()
             self.hide()
-        , 3000)
+        , 5000)
 
     hide: () ->
         @visible--;

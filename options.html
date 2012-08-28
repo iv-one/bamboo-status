@@ -10,13 +10,10 @@
     <link href="assets/vendors/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="assets/vendors/bootstrap/css/docs.css" rel="stylesheet">
     <style type="text/css">
-        body {
-            padding-top: 60px;
-            padding-bottom: 40px;
-        }
-
-        .valid-false {
-            display: none;
+        html, body {
+            height: 100%;
+            padding: 0px;
+            margin: 0px;
         }
 
         .loading {
@@ -26,6 +23,16 @@
         .alerts {
             overflow: hidden;
             height: 1px;
+        }
+
+        .fork-me {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .wrap {
+            padding-top: 60px;
         }
     </style>
     <link href="assets/vendors/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
@@ -46,60 +53,66 @@
 
 <body>
 
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container-fluid">
-            <a class="brand" href="#">Bamboo Status <i class="icon-star icon-white"></i></a>
-            <a class="pull-right loading hide" href="#"><img src="assets/images/loading.gif" width="22px" height="22px"/></a>
-        </div>
-    </div>
-</div>
-
-<div class="container" ng-controller="SettingsController">
-
-    <div class="row">
-        <div class="span12 alerts">
-
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="span12">
-            <form class="well form-search">
-                <label class="control-label" for="apiUrl">Bamboo API: </label>
-                <input ng-model="url" type="text" class="input-big search-query" id="apiUrl" style="width:350px" placeholder="http://localhost.com:8085/bamboo…">
-                <button ng-click="update()" type="submit" class="btn">Update</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="row valid-{{valid}}">
-        <div class="span6">
-            <form class="well form-inline">
-                <label class="control-label">Current Build</label>
-                <select ng-model="currentPlan"
-                        ng-options="plan.shortName group by plan.projectName for plan in plans"
-                        ng-change="change()">
-                </select>
-            </form>
-        </div>
-        <div class="span6">
-            <form class="well form-inline">
-                <label class="control-label">Test Build</label>
-                <select ng-model="testPlan"
-                        ng-options="plan.shortName group by plan.projectName for plan in plans"
-                        ng-change="change()">
-                </select>
-            </form>
-        </div>
-    </div>
-
-    <div class="row valid-{{valid}}">
-        <div class="span12">
-            <div class="form-actions">
-                <button ng-click="save()" class="btn btn{{button}}">Save changes</button>
+<div class="wrap">
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="brand" href="#">Bamboo Status <i class="icon-star icon-white"></i></a>
+                <a class="pull-right loading hide" href="#"><img src="assets/images/loading.gif" width="22px" height="22px"/></a>
             </div>
         </div>
+    </div>
+
+    <div class="container" ng-controller="SettingsController">
+
+        <div class="row">
+            <div class="span12 alerts">
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <form class="well form-search">
+                    <label class="control-label" for="apiUrl">Bamboo API: </label>
+                    <input ng-model="url" type="text" class="input-big search-query" id="apiUrl" style="width:350px" placeholder="http://localhost.com:8085/bamboo…">
+                    <button ng-click="update()" type="submit" class="btn">Update</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row valid-{{valid}}">
+            <div class="span6">
+                <form class="well form-inline">
+                    <label class="control-label">Current Build</label>
+                    <select ng-model="currentPlan"
+                            ng-options="plan.shortName group by plan.projectName for plan in plans"
+                            ng-change="change()">
+                    </select>
+                </form>
+            </div>
+            <div class="span6">
+                <form class="well form-inline">
+                    <label class="control-label">Test Build</label>
+                    <select ng-model="testPlan"
+                            ng-options="plan.shortName group by plan.projectName for plan in plans"
+                            ng-change="change()">
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div class="row valid-{{valid}}">
+            <div class="span12">
+                <div class="form-actions">
+                    <button ng-click="save()" class="btn btn{{button}}">Save changes</button>
+                </div>
+            </div>
+        </div>
+
+        <a href="https://github.com/ivan-dyachenko/bamboo-status" target="_blank" class="fork-me">
+            <img border="0" src="github-fork-me.png"/>
+        </a>
     </div>
 </div>
 
