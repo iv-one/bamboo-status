@@ -28,6 +28,11 @@ class Store
         url = window.localStorage.url
         url != null && url != '' && window.localStorage.correctUrl
 
+    isFirstRunning: () ->
+        ok = !window.localStorage.installed
+        window.localStorage.installed = true
+        ok
+
 angular.module('Store', []).factory('store', ($window) ->
     new Store
 )
