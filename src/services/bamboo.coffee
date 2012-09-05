@@ -17,6 +17,9 @@ class BambooService
         )
 
     getPlanResult: (plan, success, fail) ->
+        if plan == null
+            return fail()
+
         @load('result/' + plan.key + '/?expand=results.result', (data)->
             success?(new Result($(data).find("result").first()))
         , fail)

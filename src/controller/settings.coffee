@@ -30,7 +30,7 @@ SettingsController = ($scope, store, bambooService, alert) ->
     $scope.url = store.getUrl()
 
     $scope.update = () ->
-        store.setUrl($scope.url)
+        store.setUrl($scope.url.replace(/\/*$/g, ''))
         reloadApi()
 
     $scope.save = () ->
