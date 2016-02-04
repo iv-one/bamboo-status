@@ -43,7 +43,7 @@ class BambooService
                 project = new Project @
                 projects[project.key] = project
 
-            self.load 'plan', loadPlans, fail
+            self.load 'plan?max-results=10000', loadPlans, fail
 
         @load 'project', loadProjects, fail
 
